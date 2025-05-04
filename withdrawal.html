@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Withdrawal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f7f7f7;
+    }
+    h2 {
+      text-align: center;
+    }
+    .withdraw-form, .history {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .status-pending { color: orange; }
+    .status-successful { color: green; }
+    .status-rejected { color: red; }
+  </style>
+</head>
+<body>
+
+  <h2>Withdrawal Page</h2>
+
+  <div class="withdraw-form">
+    <h3>Request Withdrawal</h3>
+    <label>Bank:</label>
+    <select id="bank">
+      <option value="">Select Bank</option>
+      <option>Opay</option>
+      <option>Access Bank</option>
+      <option>Moniepoint</option>
+      <option>Kuda</option>
+      <option>Zenith</option>
+      <option>Palmpay</option>
+      <option>First Bank</option>
+      <option>Momo</option>
+      <option>SmartCash</option>
+      <option>Suntrust</option>
+      <option>UBA</option>
+    </select>
+
+    <label>Account Number:</label>
+    <input type="text" id="accountNumber" placeholder="Enter Account Number" />
+
+    <label>Account Name:</label>
+    <input type="text" id="accountName" placeholder="Enter Account Name" />
+
+    <label>Amount (Min ₦1000):</label>
+    <input type="number" id="amount" placeholder="Enter Amount" />
+
+    <button onclick="submitWithdrawal()">Submit Withdrawal</button>
+  </div>
+
+  <div class="history">
+    <h3>Withdrawal History</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Bank</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <!-- Withdrawals will appear here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Load balance from localStorage
+    let balance = parseFloat(localStorage.getItem("userBalance")) || 0;
+    let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || [];
+
+    function updateHistory() {
+      const body = document.getElementById("historyBody");
+      body.innerHTML = "";
+      withdrawals.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.bank}</td>
+          <td>₦${item.amount}</td>
+          <td class="status-${item.status.toLowerCase()}">${item.status}</td>
+        `;
+        body.appendChild(row);
+      });
+    }
+
+    function submitWithdrawal() {
+      const bank = document.getElementById("bank").value;
+      const accountNumber = document.getElementById("accountNumber").value;
+      const accountName = document.getElementById("accountName").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+
+      if (!bank || !accountNumber || !accountName || !amount) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      if (amount < 300) {
+        alert("Minimum withdrawal is ₦300.");
+        return;
+      }
+
+      if (amount < balance) {
+        alert("Insufficient balance.");
+        return;
+      }
+
+      balance -= amount;
+      localStorage.setItem("userBalance", balance.toFixed(2));
+
+      withdrawals.push({
+        bank,
+        accountNumber,
+        accountName,
+        amount,
+        status: "Pending"
+      });
+      localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
+
+      alert("Withdrawal request submitted.");
+      updateHistory();
+    }
+
+    // Show existing withdrawals
+    updateHistory();
+  </script>
+
+    <!-- Back Button -->
+    <button class="back-button" onclick="location.href = 'dashboard.html';">Back to Dashboard</button>
+</body>
+</html>
