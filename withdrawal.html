@@ -70,7 +70,7 @@
     <label>Account Name:</label>
     <input type="text" id="accountName" placeholder="Enter Account Name" />
 
-    <label>Amount (Min ₦1000):</label>
+    <label>Amount (Min ₦200):</label>
     <input type="number" id="amount" placeholder="Enter Amount" />
 
     <button onclick="submitWithdrawal()">Submit Withdrawal</button>
@@ -122,8 +122,8 @@
         return;
       }
 
-      if (amount < 300) {
-        alert("Minimum withdrawal is ₦300.");
+      if (amount < 200) {
+        alert("Minimum withdrawal is ₦200.");
         return;
       }
 
